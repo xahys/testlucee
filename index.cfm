@@ -8,25 +8,35 @@
     dbUser = system.getenv("DB_USER") ?: "";
     dbPassword = system.getenv("DB_PASSWORD") ?: "";
     
-    // Строка подключения к базе данных
+    // Определение источника данных
     datasource = "postgresDSN";
-    
-    // Создаем и настраиваем источник данных, если он еще не существует
-    if (!datasourceExists(datasource)) {
-        datasourceCreate(
-            dsn = datasource, 
-            database = dbName, 
-            username = dbUser, 
-            password = dbPassword, 
-            class = "org.postgresql.Driver",
-            url = "jdbc:postgresql://" & dbHost & ":" & dbPort & "/" & dbName
-        );
-    }
 </cfscript>
 
-<cfquery name="userData" datasource="#datasource#">
-    SELECT id, name, email FROM users
-</cfquery>
+<cftry>
+    <!--- Пробуем выполнить запрос --->
+    <cfquery name="userData" datasource="#datasource#">
+        SELECT id, name, email FROM users
+    </cfquery>
+
+    <cfcatch type="database">
+        <!--- Если ошибка базы данных, создаем источник данных --->
+        <cfscript>
+            datasourceCreate(
+                dsn = datasource, 
+                database = dbName, 
+                username = dbUser, 
+                password = dbPassword, 
+                class = "org.postgresql.Driver",
+                url = "jdbc:postgresql://" & dbHost & ":" & dbPort & "/" & dbName
+            );
+        </cfscript>
+        
+        <!--- Повторное выполнение запроса после создания источника --->
+        <cfquery name="userData" datasource="#datasource#">
+            SELECT id, name, email FROM users
+        </cfquery>
+    </cfcatch>
+</cftry>
 
 <cfoutput>
     <h2>Hello, Lucee! Today's date is #dateFormat(now(), 'yyyy-mm-dd')#.</h2>
