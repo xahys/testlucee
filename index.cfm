@@ -1,8 +1,4 @@
 <cfscript>
-    <cfset driverPath = "/opt/lucee/server/lucee-server/bundles/org.postgresql.jdbc-42.7.3.jar">
-    <cfset createObject("java", "org.postgresql.Driver").new()>
-    <cfset createObject("java", "java.sql.DriverManager").registerDriver(createObject("java", "org.postgresql.Driver").new())>
-
     // Чтение переменных окружения для подключения к БД
     dbHost = createObject("java", "java.lang.System").getenv("DB_HOST") ?: "";
     dbPort = createObject("java", "java.lang.System").getenv("DB_PORT") ?: "5432";
@@ -34,14 +30,12 @@
             <th>Name</th>
             <th>Email</th>
         </tr>
-        <cfloop>
-            <cfif rs.next()>
-                <tr>
-                    <td>#rs.getInt("id")#</td>
-                    <td>#rs.getString("name")#</td>
-                    <td>#rs.getString("email")#</td>
-                </tr>
-            </cfif>
+        <cfloop condition="rs.next()">
+            <tr>
+                <td>#rs.getInt('id')#</td>
+                <td>#rs.getString('name')#</td>
+                <td>#rs.getString('email')#</td>
+            </tr>
         </cfloop>
     </table>
 </cfoutput>
