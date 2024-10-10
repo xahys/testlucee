@@ -1,3 +1,7 @@
+Class.forName("org.postgresql.Driver");
+Class.forName("org.postgresql.jdbc.Driver");
+
+
 <cfscript>
     // Регистрация драйвера PostgreSQL
     driverClass = createObject("java", "org.postgresql.Driver");
