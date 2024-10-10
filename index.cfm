@@ -1,4 +1,14 @@
 <cfscript>
+    // Укажите путь к драйверу, если требуется
+    driverPath = "/opt/lucee/server/lucee-server/bundles/org.postgresql.jdbc-42.7.3.jar"; 
+
+    // Регистрация драйвера
+    driverClass = createObject("java", "org.postgresql.Driver");
+    // Зарегистрировать драйвер
+    createObject("java", "java.sql.DriverManager").registerDriver(driverClass);
+</cfscript>
+
+<cfscript>
     // Чтение переменных окружения для подключения к БД
     dbHost = createObject("java", "java.lang.System").getenv("DB_HOST") ?: "";
     dbPort = createObject("java", "java.lang.System").getenv("DB_PORT") ?: "5432";
@@ -9,12 +19,12 @@
     // Строка подключения к базе данных
     jdbcUrl = "jdbc:postgresql://" & dbHost & ":" & dbPort & "/" & dbName;
 
-    // Регистрация драйвера
-    driverClass = createObject("java", "org.postgresql.Driver");
-    createObject("java", "java.sql.DriverManager").registerDriver(driverClass);
-
     // Создание объекта соединения
-    dbConnection = createObject("java", "java.sql.DriverManager").getConnection(jdbcUrl, dbUser, dbPassword);
+    try {
+        dbConnection = createObject("java", "java.sql.DriverManager").getConnection(jdbcUrl, dbUser, dbPassword);
+    } catch (any e) {
+        writeOutput("Connection error: " & e.message);
+    }
     
     // Создание запроса
     stmt = dbConnection.createStatement();
