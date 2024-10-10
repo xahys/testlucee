@@ -1,42 +1,21 @@
 <cfscript>
-    system = createObject("java", "java.lang.System");
-    
     // Чтение переменных окружения для подключения к БД
-    dbHost = system.getenv("DB_HOST") ?: "";
-    dbPort = system.getenv("DB_PORT") ?: "5432";
-    dbName = system.getenv("DB_NAME") ?: "";
-    dbUser = system.getenv("DB_USER") ?: "";
-    dbPassword = system.getenv("DB_PASSWORD") ?: "";
+    dbHost = createObject("java", "java.lang.System").getenv("DB_HOST") ?: "";
+    dbPort = createObject("java", "java.lang.System").getenv("DB_PORT") ?: "5432";
+    dbName = createObject("java", "java.lang.System").getenv("DB_NAME") ?: "";
+    dbUser = createObject("java", "java.lang.System").getenv("DB_USER") ?: "";
+    dbPassword = createObject("java", "java.lang.System").getenv("DB_PASSWORD") ?: "";
     
-    // Определение источника данных
-    datasource = "postgresDSN";
+    // Строка подключения к базе данных
+    jdbcUrl = "jdbc:postgresql://" & dbHost & ":" & dbPort & "/" & dbName;
+
+    // Создание объекта соединения
+    dbConnection = createObject("java", "java.sql.DriverManager").getConnection(jdbcUrl, dbUser, dbPassword);
+    
+    // Создание запроса
+    stmt = dbConnection.createStatement();
+    rs = stmt.executeQuery("SELECT id, name, email FROM users");
 </cfscript>
-
-<cftry>
-    <!--- Пробуем выполнить запрос --->
-    <cfquery name="userData" datasource="#datasource#">
-        SELECT id, name, email FROM users
-    </cfquery>
-
-    <cfcatch type="database">
-        <!--- Если ошибка базы данных, создаем источник данных --->
-        <cfscript>
-            datasourceCreate(
-                dsn = datasource, 
-                database = dbName, 
-                username = dbUser, 
-                password = dbPassword, 
-                class = "org.postgresql.Driver",
-                url = "jdbc:postgresql://" & dbHost & ":" & dbPort & "/" & dbName
-            );
-        </cfscript>
-        
-        <!--- Повторное выполнение запроса после создания источника --->
-        <cfquery name="userData" datasource="#datasource#">
-            SELECT id, name, email FROM users
-        </cfquery>
-    </cfcatch>
-</cftry>
 
 <cfoutput>
     <h2>Hello, Lucee! Today's date is #dateFormat(now(), 'yyyy-mm-dd')#.</h2>
@@ -47,12 +26,21 @@
             <th>Name</th>
             <th>Email</th>
         </tr>
-        <cfloop query="userData">
-            <tr>
-                <td>#id#</td>
-                <td>#name#</td>
-                <td>#email#</td>
-            </tr>
+        <cfloop>
+            <cfif rs.next()>
+                <tr>
+                    <td>#rs.getInt("id")#</td>
+                    <td>#rs.getString("name")#</td>
+                    <td>#rs.getString("email")#</td>
+                </tr>
+            </cfif>
         </cfloop>
     </table>
 </cfoutput>
+
+<cfscript>
+    // Закрытие ресурсов
+    rs.close();
+    stmt.close();
+    dbConnection.close();
+</cfscript>
