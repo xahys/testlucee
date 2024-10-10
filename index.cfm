@@ -1,10 +1,12 @@
 <cfscript>
+    system = createObject("java", "java.lang.System");
+    
     // Чтение переменных окружения для подключения к БД
-    dbHost = GetSystemSetting("DB_HOST", "");
-    dbPort = GetSystemSetting("DB_PORT", "5432");
-    dbName = GetSystemSetting("DB_NAME", "");
-    dbUser = GetSystemSetting("DB_USER", "");
-    dbPassword = GetSystemSetting("DB_PASSWORD", "");
+    dbHost = system.getenv("DB_HOST") ?: "";
+    dbPort = system.getenv("DB_PORT") ?: "5432";
+    dbName = system.getenv("DB_NAME") ?: "";
+    dbUser = system.getenv("DB_USER") ?: "";
+    dbPassword = system.getenv("DB_PASSWORD") ?: "";
     
     // Строка подключения к базе данных
     datasource = "postgresDSN";
@@ -38,7 +40,6 @@
         <cfloop query="userData">
             <tr>
                 <td>#id#</td>
-                <td>#name#</td>
                 <td>#name#</td>
                 <td>#email#</td>
             </tr>
