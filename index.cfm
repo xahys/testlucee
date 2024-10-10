@@ -9,6 +9,13 @@
 </cfscript>
 
 <cfscript>
+    // Регистрация драйвера PostgreSQL
+    driverClass = createObject("java", "org.postgresql.Driver");
+    createObject("java", "java.sql.DriverManager").registerDriver(driverClass);
+</cfscript>
+
+
+<cfscript>
     // Чтение переменных окружения для подключения к БД
     dbHost = createObject("java", "java.lang.System").getenv("DB_HOST") ?: "";
     dbPort = createObject("java", "java.lang.System").getenv("DB_PORT") ?: "5432";
