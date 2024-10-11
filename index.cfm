@@ -9,6 +9,7 @@
     <body>
         <h2>Hello, Lucee! Today's date is #dateFormat(now(), 'yyyy-mm-dd')#.</h2>
         <h3>Users List:</h3>
+ <!--
         <table>
             <tr>
                 <th>ID</th>
@@ -27,6 +28,7 @@
                 </tr>
             </cfloop>
         </table>
+-->
     </body>
     </html>
 </cfoutput>
