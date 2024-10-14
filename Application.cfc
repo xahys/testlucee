@@ -118,7 +118,7 @@
 		<cfset var ds={}/>
 		
 		<cfloop list="class,connectionString,database,driver,host,port,type,url,username,password,bundleName,bundleVersion,connectionLimit,liveTimeout,validate" item="field">
-			<cfset var value=system.getEnv(UCase("#arguments.prefix#_#field#"))/>
+			<cfset var value=system.getEnv("#arguments.prefix#_#field#")/>
 			<cfif isDefined("value") AND len(value)>
 				<cfset structInsert(ds,field,value)/>
 			</cfif>			
