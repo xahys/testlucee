@@ -1,11 +1,12 @@
 Тестовая обкатка работоспособности Lucee с БД
 ==============================================
 
-Проходим ряд этапов
-===========================
+*Проходим ряд этапов*
+
 1) Разворачиваем PostgreSQL
 2) Подключаемся к ней и делаем
---
+
+```sh
 ALTER SYSTEM SET password_encryption = 'scram-sha-256';
 SELECT pg_reload_conf();
 
@@ -13,8 +14,9 @@ CREATE USER myuser WITH PASSWORD 'password12345';
 CREATE DATABASE mydatabase;
 ALTER DATABASE mydatabase OWNER TO myuser;
 ALTER DATABASE mydatabase SET search_path to mydatabase;
-
--- Подключаемся под myuser
+```
+2.1) Подключаемся под myuser
+```sh
 \C mydatabase
 CREATE SCHEMA mydatabase
 CREATE TABLE check_point (
@@ -23,14 +25,15 @@ CREATE TABLE check_point (
 );
 INSERT INTO check_point (value)
 VALUES (1), (2), (3), (4), (5);
-
+```
 3) Находим предварительно LUCEE где можно использовать
---
+```sh
 CommandBox> repl
 CFSCRIPT-REPL: getInstance('PasswordManager@lucee-password-util').encryptDataSource('password12345')
-
+```
 Получаем hash и далее используем в передаче CFM:
 Пример CFM ниже
+```sh
 { 
   "testds_class": "org.postgresql.Driver",
   "testds_bundleName": "org.postgresql.jdbc", 
@@ -42,3 +45,4 @@ CFSCRIPT-REPL: getInstance('PasswordManager@lucee-password-util').encryptDataSou
   "testds_liveTimeout": "15", 
   "testds_validate": "false" 
 }
+```
